@@ -1,30 +1,53 @@
-# nsfwjs-docker [![Docker Pulls](https://img.shields.io/docker/pulls/andresribeiroo/nsfwjs.svg)](https://hub.docker.com/r/andresribeiroo/nsfwjs)
+# nsfwjs-docker
 
-Docker-Powered Self-Hosted NSFW Detection API ([NSFWJS](https://github.com/infinitered/nsfwjs) under the hood). You can find it on the Docker Hub [here](https://hub.docker.com/r/andresribeiroo/nsfwjs).
+Self-Hosted NSFW Detection API powered by Docker ([NSFWJS](https://github.com/infinitered/nsfwjs) under the hood).
 
 ## Features ✨
 
-- ℹ️ Return predictions for `Neutral`, `Drawing`, `Sexy`, `Hentai` and `Porn`
+- ℹ️ Returns predictions for `Neutral`, `Drawing`, `Sexy`, `Hentai` and `Porn`
 - 🎯 Pretty accurate (~93%)
 - 🖼️ Supports different image formats
-- ⚡ 250ms to make predictions to a single image
+- ⚡ 250ms to make predictions for a single image
 - 🔐 Bearer token authentication
 
 ## Installation ⚙️
 
+### 1. Clone the repository
+
 ```shell
-docker run -p 3333:3333 -d --name nsfwjs andresribeiroo/nsfwjs:2.0
+git clone https://github.com/skyfetch0/nsfwjs-docker.git
+cd nsfwjs-docker
 ```
 
-If you are deploying in production, you will probably want to pass the `--restart always` flag to start the container whenever the server restarts.
+### 2. Build the Docker image
+
+```shell
+docker build -t skyfetch0/nsfwjs .
+```
+
+### 3. Run the container
+
+With a custom API key:
+
+```shell
+docker run -p 3333:3333 -e API_KEY=your_secret_key -d --name nsfwjs skyfetch0/nsfwjs
+```
+
+Without an API key (auto-generated at startup):
+
+```shell
+docker run -p 3333:3333 -d --name nsfwjs skyfetch0/nsfwjs
+```
+
+> If you are deploying in production, pass the `--restart always` flag to automatically restart the container when the server reboots.
+
+```shell
+docker run -p 3333:3333 -e API_KEY=your_secret_key --restart always -d --name nsfwjs skyfetch0/nsfwjs
+```
 
 ## Authentication 🔐
 
-All endpoints require a Bearer token. Set your API key via the `API_KEY` environment variable:
-
-```shell
-docker run -p 3333:3333 -e API_KEY=your_secret_key -d --name nsfwjs andresribeiroo/nsfwjs:2.0
-```
+All endpoints require a Bearer token. Set your API key via the `API_KEY` environment variable when starting the container.
 
 If `API_KEY` is not provided, one is automatically generated at startup and printed to the container logs:
 
@@ -35,7 +58,7 @@ docker logs nsfwjs
 ```
 ╔══════════════════════════════════════════════════════════╗
 ║  API_KEY ortam değişkeni bulunamadı, otomatik oluşturuldu ║
-║  API_KEY: a3f9c2...                                       ║
+║  API_KEY: a3f9c2b1...                                     ║
 ║  Bu anahtarı güvenli bir yerde saklayın!                  ║
 ╚══════════════════════════════════════════════════════════╝
 ```
@@ -52,7 +75,7 @@ Requests without a valid token will receive a `401 Unauthorized` response.
 
 ### One image
 
-`POST` request to `/single/multipart-form` sending an image in the `content` field.
+`POST` request to `/single/multipart-form` with an image in the `content` field.
 
 ```shell
 curl -X POST http://localhost:3333/single/multipart-form \
@@ -89,7 +112,7 @@ curl -X POST http://localhost:3333/single/multipart-form \
 
 ### Multiple images
 
-`POST` request to `/multiple/multipart-form` sending images in the `contents` field.
+`POST` request to `/multiple/multipart-form` with images in the `contents` field.
 
 ```shell
 curl -X POST http://localhost:3333/multiple/multipart-form \
@@ -148,3 +171,7 @@ curl -X POST http://localhost:3333/multiple/multipart-form \
   ]
 }
 ```
+
+## License
+
+[MIT](LICENSE)
