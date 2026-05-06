@@ -1,7 +1,20 @@
+import { bearerAuth } from "hono/bearer-auth";
 import { Hono } from "hono";
 import { getPrediction } from "./getPrediction";
 
+const apiKey = Bun.env.API_KEY ?? (() => {
+	const generated = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+	console.log("╔══════════════════════════════════════════════════════════╗");
+	console.log("║  API_KEY ortam değişkeni bulunamadı, otomatik oluşturuldu ║");
+	console.log(`║  API_KEY: ${generated}  ║`);
+	console.log("║  Bu anahtarı güvenli bir yerde saklayın!                  ║");
+	console.log("╚══════════════════════════════════════════════════════════╝");
+	return generated;
+})();
+
 const server = new Hono();
+
+server.use("/*", bearerAuth({ token: apiKey }));
 
 server.post("/single/multipart-form", async (c) => {
 	const body = await c.req.parseBody();
